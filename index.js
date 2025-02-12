@@ -1,31 +1,75 @@
 // const http = require('http');
-// const moment = require('moment');
-// const users = require('./users');
+const moment = require('moment');
+const users = require('./users');
 const express = require('express');
 const app = express();
 
-// routing express. tidak perlu pakai if else lagi
-app.get('/', (req, res) => res.send("Hello World"))
+// EXERCISE 3
+app.get('/', (req, res) => res.status(200).json({
+    message: 'This is the home page'
+}))
+
 app.get('/about', (req, res) => res.status(200).json({
     status: 'success',
-    message: 'about page',
-    data: []
-}));
+    message: 'response success',
+    description: 'exercise #3',
+    date: moment().format('MMMM Do YYYY, h:mm:ss a')
+}))
 
-app.post('/post', (req, res) => res.send('request dengan method post'))
-app.put('/put', (req, res) => res.send('request dengan method put'))
-app.delete('/delete', (req, res) => res.send('request dengan method delete'))
-app.patch('/patch', (req, res) => res.send('request dengan method patch'))
+app.get('/users', (req, res) => res.status(200).json(users))
 
-app.all('/universal', (req, res) => res.send(`request method ${req.method}`))
 
-// Routing dinamis
-// 1. menggunakan params
-app.get('/post/:id', (req, res) => res.send(`Artikel ke - ${req.params.id}`)) 
 
 const hostname = '127.0.0.1';
 const port = 3000;
 app.listen(port, hostname, ()=>console.log(`Server running at http://localhost:${port}`));
+
+
+
+
+
+
+
+// EXPRESS JS
+
+
+
+// routing express tidak perlu pakai if else lagi
+// app.get('/', (req, res) => res.send("Hello World"))
+// app.get('/about', (req, res) => res.status(200).json({
+//     status: 'success',
+//     message: 'about page',
+//     data: []
+// }));
+
+// app.post('/post', (req, res) => res.send('request dengan method post'))
+// app.put('/put', (req, res) => res.send('request dengan method put'))
+// app.delete('/delete', (req, res) => res.send('request dengan method delete'))
+// app.patch('/patch', (req, res) => res.send('request dengan method patch'))
+
+// app.all('/universal', (req, res) => res.send(`request method ${req.method}`))
+
+// Routing dinamis
+// 1. menggunakan params
+// app.get('/post/:id', (req, res) => res.send(`Artikel ke - ${req.params.id}`)) 
+
+// 2. menggunakan query string
+// app.get('/post', (req, res) => {
+//     const {page, sort} = req.query
+//     res.send(`Query yang didapatkan adalah, page : ${page}, sort : ${sort}`)
+// })
+
+// const hostname = '127.0.0.1';
+// const port = 3000;
+// app.listen(port, hostname, ()=>console.log(`Server running at http://localhost:${port}`));
+
+
+
+
+
+
+
+
 
 
 
