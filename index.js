@@ -5,51 +5,30 @@ const morgan = require("morgan");
 const errorHandler = require("errorhandler");
 const app = express();
 
-// MiddleWare
-const log = (req, res, next) => {
-  console.log(
-    moment().format("h:mm:ss a") + " " + req.originalUrl + " " + req.ip
-  );
-  next();
-};
-
 app.use(morgan("tiny"));
-app.use(errorHandler);
 
-// EXPRESS JS
+app.get("/users", (req, res) => res.status(200).json(users));
+app.get("/users/:name", (req, res) => {
+  const userName = req.params.name.toLowerCase();
+  const user = users.find((u) => u.name.toLowerCase() === userName);
 
-// routing express tidak perlu pakai if else lagi
-app.get("/", (req, res) => res.send("Hello World"));
-app.get("/about", (req, res) =>
-  res.status(200).json({
-    status: "success",
-    message: "about page",
-    data: [],
-  })
-);
-
-app.post("/post", (req, res) => res.send("request dengan method post"));
-app.put("/put", (req, res) => res.send("request dengan method put"));
-app.delete("/delete", (req, res) => res.send("request dengan method delete"));
-app.patch("/patch", (req, res) => res.send("request dengan method patch"));
-
-app.all("/universal", (req, res) => res.send(`request method ${req.method}`));
-
-// Routing dinamis
-// 1. menggunakan params
-app.get("/post/:id", (req, res) => res.send(`Artikel ke - ${req.params.id}`));
-
-// 2. menggunakan query string
-app.get("/post", (req, res) => {
-  const { page, sort } = req.query;
-  res.send(`Query yang didapatkan adalah, page : ${page}, sort : ${sort}`);
+  if (!user) {
+    return res.status(404).json({ message: "Data user tidak ditemukan" });
+  }
+  res.status(200).json(user);
 });
 
 // middleware untuk 404
-app.use((req, res, next) => {
+app.use((req, res) => {
   res.status(404).json({
     status: "error",
     message: "resource tidak ditemukan",
+  });
+});
+app.use((err, req, res, next) => {
+  res.status(500).json({
+    status: "error",
+    message: "terjadi kesalahan pada server",
   });
 });
 
@@ -58,6 +37,67 @@ const port = 3000;
 app.listen(port, hostname, () =>
   console.log(`Server running at http://localhost:${port}`)
 );
+
+// const moment = require("moment");
+// const users = require("./users");
+// const express = require("express");
+// const morgan = require("morgan");
+// const errorHandler = require("errorhandler");
+// const app = express();
+
+// // MiddleWare
+// const log = (req, res, next) => {
+//   console.log(
+//     moment().format("h:mm:ss a") + " " + req.originalUrl + " " + req.ip
+//   );
+//   next();
+// };
+
+// app.use(morgan("tiny"));
+// app.use(errorHandler);
+
+// // EXPRESS JS
+
+// // routing express tidak perlu pakai if else lagi
+// app.get("/", (req, res) => res.send("Hello World"));
+// app.get("/about", (req, res) =>
+//   res.status(200).json({
+//     status: "success",
+//     message: "about page",
+//     data: [],
+//   })
+// );
+
+// app.post("/post", (req, res) => res.send("request dengan method post"));
+// app.put("/put", (req, res) => res.send("request dengan method put"));
+// app.delete("/delete", (req, res) => res.send("request dengan method delete"));
+// app.patch("/patch", (req, res) => res.send("request dengan method patch"));
+
+// app.all("/universal", (req, res) => res.send(`request method ${req.method}`));
+
+// // Routing dinamis
+// // 1. menggunakan params
+// app.get("/post/:id", (req, res) => res.send(`Artikel ke - ${req.params.id}`));
+
+// // 2. menggunakan query string
+// app.get("/post", (req, res) => {
+//   const { page, sort } = req.query;
+//   res.send(`Query yang didapatkan adalah, page : ${page}, sort : ${sort}`);
+// });
+
+// // middleware untuk 404
+// app.use((req, res, next) => {
+//   res.status(404).json({
+//     status: "error",
+//     message: "resource tidak ditemukan",
+//   });
+// });
+
+// const hostname = "127.0.0.1";
+// const port = 3000;
+// app.listen(port, hostname, () =>
+//   console.log(`Server running at http://localhost:${port}`)
+// );
 
 // EXERCISE 3
 
