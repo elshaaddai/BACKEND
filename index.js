@@ -4,13 +4,32 @@ const moment = require("moment");
 const users = require("./users");
 const morgan = require("morgan");
 const app = express();
+const path = require("path");
 
 // routers
 const routers = require("./routers");
+const log = (req, res, next) => {
+  console.log(
+    moment().format("h:mm:ss a") + " " + req.originalUrl + " " + req.ip
+  );
+  next();
+};
+
 app.use(morgan("tiny"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "public"))); //buat gambar langsung bisa di akses
+
+// routers
 app.use(routers);
+
+// middleware untuk 404
+app.use((req, res) => {
+  res.status(404).json({
+    status: "error",
+    message: "resource tidak ditemukan",
+  });
+});
 
 const hostname = "127.0.0.1";
 const port = 3000;

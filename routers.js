@@ -1,6 +1,36 @@
 const express = require("express");
 const routers = express.Router();
 
+// inport path
+const path = require("path");
+
+// Path
+
+// routers.get("/download", (req, res) => {
+//   const filename = "logofik.png";
+//   res.sendFile(path.join(__dirname + filename)); //gambar tidak ada dalam folder dowload
+// });
+
+// Download
+routers.get("/download", (req, res) => {
+  const filename = "logofik.png";
+  res.sendFile(path.join(__dirname + "/download/" + filename), {
+    headers: {
+      "Content-Disposition": 'attachment; filename="logofik-photo.png"',
+    },
+  });
+});
+
+// cara pendek untuk download
+// routers.get("/download", (req, res) => {
+//   const filename = "logofik.png";
+//   res.download(
+//     path.join(__dirname + "/download" + filename),
+//     "logofik-photo.png"
+//   );
+// });
+
+// Routing
 routers.post("/login", (req, res) => {
   const { username, password } = req.body;
   res.status(200).json({
