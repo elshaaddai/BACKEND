@@ -1,8 +1,25 @@
 const express = require("express");
 const routers = express.Router();
 
+// upload file menggunakan multer
+const fs = require("fs");
+const multer = require("multer");
+const upload = multer({ dest: "public" });
+
 // inport path
 const path = require("path");
+
+// routing upload file menggunakan multer
+routers.post("/upload", upload.single("file"), (req, res) => {
+  const file = req.file;
+  if (file) {
+    const target = path.join(__dirname, "public", file.originalname);
+    fs.renameSync(file.path, target); //rename file agar sama dengan original name. jika tidak pakai maka file random akan terupload
+    res.send("file berhasil diupload");
+  } else {
+    res.send("file gagal diuplaod");
+  }
+});
 
 // Path
 
