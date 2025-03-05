@@ -4,12 +4,19 @@ const routers = express.Router();
 // upload file menggunakan multer
 const fs = require("fs");
 const multer = require("multer");
-const upload = multer({ dest: "public" });
 
 // inport path
 const path = require("path");
 
 // routing upload file menggunakan multer
+const imageFilter = (req, res, cb) => {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+    return cb(null, false);
+  }
+  cb(null, true);
+};
+const upload = multer({ dest: "public", imageFilter });
+
 routers.post("/upload", upload.single("file"), (req, res) => {
   const file = req.file;
   if (file) {
@@ -62,6 +69,13 @@ routers.post("/login", (req, res) => {
 
 routers.get("/", (req, res) => res.send("Hello World"));
 routers.get("/about", (req, res) =>
+  res.status(200).json({
+    status: "success",
+    message: "about page",
+    data: [],
+  })
+);
+routers.put("/about", (req, res) =>
   res.status(200).json({
     status: "success",
     message: "about page",

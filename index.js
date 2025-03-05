@@ -6,6 +6,9 @@ const morgan = require("morgan");
 const app = express();
 const path = require("path");
 
+// cors
+const cors = require("cors");
+
 // routers
 const routers = require("./routers");
 const log = (req, res, next) => {
@@ -19,6 +22,12 @@ app.use(morgan("tiny"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public"))); //buat gambar langsung bisa di akses
+app.use(
+  cors({
+    origin: "http://127.0.0.1:5500",
+    methods: ["GET", "PUT"], //allow access ke method //preflight request
+  })
+);
 
 // routers
 app.use(routers);
