@@ -1,3 +1,7 @@
+// =============================================================
+// Exercise 5
+// =============================================================
+
 const http = require("http");
 const express = require("express");
 const moment = require("moment");
@@ -5,31 +9,42 @@ const users = require("./users");
 const morgan = require("morgan");
 const app = express();
 const path = require("path");
-
-// cors
 const cors = require("cors");
-
-// routers
 const routers = require("./routers");
-const log = (req, res, next) => {
-  console.log(
-    moment().format("h:mm:ss a") + " " + req.originalUrl + " " + req.ip
-  );
-  next();
-};
 
+// middleware morgan
 app.use(morgan("tiny"));
+
+// middleware untuk akses program file statik di folder public
+app.use(express.static(path.join(__dirname, "public")));
+
+// middleware body parser
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public"))); //buat gambar langsung bisa di akses
+
+// middleware cors
 app.use(
   cors({
     origin: "http://127.0.0.1:5500",
-    methods: ["GET", "PUT"], //allow access ke method //preflight request
   })
 );
 
-// routers
+// get semua users
+app.get("/users", (req, res) => res.status(200).json(users));
+// get users berdasarkan nama
+app.get("/users/:name", (req, res) => {
+  const userName = req.params.name.toLowerCase();
+  const user = users.find((u) => u.name.toLowerCase() === userName);
+
+  // error data tidak ada
+  if (!user) {
+    return res.status(404).json({ message: "Data user tidak ditemukan" });
+  }
+  res.status(200).json(user);
+});
+app.use(express.json());
+
+// menghubungkan file routers.js untuk menangani request
 app.use(routers);
 
 // middleware untuk 404
@@ -39,14 +54,77 @@ app.use((req, res) => {
     message: "resource tidak ditemukan",
   });
 });
+// middleware error handling (500)
+app.use((err, req, res, next) => {
+  res.status(500).json({
+    status: "error",
+    message: "terjadi kesalahan pada server",
+  });
+});
 
 const hostname = "127.0.0.1";
 const port = 3000;
 app.listen(port, hostname, () =>
   console.log(`Server running at http://localhost:${port}`)
 );
+// ======================================================================== //
 
+// =========================================================================
+// cors
+// =========================================================================
+
+// const http = require("http");
+// const express = require("express");
+// const moment = require("moment");
+// const users = require("./users");
+// const morgan = require("morgan");
+// const app = express();
+// const path = require("path");
+
+// // cors
+// const cors = require("cors");
+
+// // routers
+// const routers = require("./routers");
+// const log = (req, res, next) => {
+//   console.log(
+//     moment().format("h:mm:ss a") + " " + req.originalUrl + " " + req.ip
+//   );
+//   next();
+// };
+
+// app.use(morgan("tiny"));
+// app.use(express.urlencoded({ extended: true }));
+// app.use(express.json());
+// app.use(express.static(path.join(__dirname, "public"))); //buat gambar langsung bisa di akses
+// app.use(
+//   cors({
+//     origin: "http://127.0.0.1:5500",
+//     methods: ["GET", "PUT"], //allow access ke method //preflight request
+//   })
+// );
+
+// // routers
+// app.use(routers);
+
+// // middleware untuk 404
+// app.use((req, res) => {
+//   res.status(404).json({
+//     status: "error",
+//     message: "resource tidak ditemukan",
+//   });
+// });
+
+// const hostname = "127.0.0.1";
+// const port = 3000;
+// app.listen(port, hostname, () =>
+//   console.log(`Server running at http://localhost:${port}`)
+// );
+// ===========================================================================================//
+
+// ===============
 // Exercise 4
+// ===============
 
 // const moment = require("moment");
 // const users = require("./users");
@@ -86,8 +164,11 @@ app.listen(port, hostname, () =>
 // app.listen(port, hostname, () =>
 //   console.log(`Server running at http://localhost:${port}`)
 // );
+// ====================================================================================================//
 
+// ==============
 // EXERCISE 3
+// ==============
 
 // const moment = require('moment');
 // const users = require('./users');
@@ -110,8 +191,11 @@ app.listen(port, hostname, () =>
 // const hostname = '127.0.0.1';
 // const port = 3000;
 // app.listen(port, hostname, ()=>console.log(`Server running at http://localhost:${port}`));
+// ===========================================================================================================//
 
+// ==========
 // EXERCISE 2
+// ==========
 
 // const server = http.createServer( (req,res) => {
 //     const url = req.url;
@@ -149,8 +233,11 @@ app.listen(port, hostname, () =>
 // server.listen(port, hostname, () => {
 //     console.log(`server running at http://${hostname}:${port}`);
 // });
+// =========================================================================================================
 
+// ==============
 // PERTEMUAN 1
+// ==============
 
 // const http = require('http');
 // const {hello,greetings} = require('./helloWorld');

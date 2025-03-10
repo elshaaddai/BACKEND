@@ -1,14 +1,45 @@
 const express = require("express");
 const routers = express.Router();
-
-// upload file menggunakan multer
+const users = require("./users");
 const fs = require("fs");
 const multer = require("multer");
-
-// inport path
 const path = require("path");
 
-// routing upload file menggunakan multer
+// ==================
+// exercise 5
+// ==================
+
+// post users
+routers.post("/users", (req, res) => {
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ message: "Masukkan data yang akan diubah" });
+  }
+
+  const newUser = {
+    id: users.length + 1,
+    name,
+  };
+  users.push(newUser);
+
+  res.status(200).json({
+    message: "User berhasil ditambahkan",
+    data: newUser,
+  });
+});
+
+// download
+routers.get("/assets", (req, res) => {
+  const filename = "logofik.png";
+  res.sendFile(path.join(__dirname + "/assets/" + filename), {
+    headers: {
+      "Content-Disposition": 'attachment; filename="logofik-photo.png"',
+    },
+  });
+});
+
+// post upload
 const imageFilter = (req, res, cb) => {
   if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
     return cb(null, false);
@@ -21,14 +52,88 @@ routers.post("/upload", upload.single("file"), (req, res) => {
   const file = req.file;
   if (file) {
     const target = path.join(__dirname, "public", file.originalname);
-    fs.renameSync(file.path, target); //rename file agar sama dengan original name. jika tidak pakai maka file random akan terupload
+    fs.renameSync(file.path, target);
     res.send("file berhasil diupload");
   } else {
     res.send("file gagal diuplaod");
   }
 });
 
+// put. edit berdasarkan nama
+routers.put("/users/:name", (req, res) => {
+  const { name: newName } = req.body;
+  const userName = req.params.name.toLocaleLowerCase();
+
+  if (!newName) {
+    return res.status(400).json({
+      message: "User tidak memasukan data pada request body",
+    });
+  }
+
+  const user = users.find((u) => u.name.toLowerCase() === userName);
+
+  if (!user) {
+    return res.status(404).json({ message: "Data user tidak ditemukan" });
+  }
+  user.name = newName;
+
+  res.status(200).json({
+    message: "User berhasil diperbarui",
+    data: user,
+  });
+});
+
+// delete
+routers.delete("/users/:name", (req, res) => {
+  const userName = req.params.name.toLowerCase();
+  const userIndex = users.findIndex((u) => u.name.toLowerCase() === userName);
+
+  const deleteUser = users.splice(userIndex, 1)[0];
+
+  res.status(200).json({
+    message: "User berhasil dihapus",
+    data: deleteUser,
+  });
+});
+
+// ===============================================================================================
+
+// ===============================
+// upload file menggunakan multer
+// ===============================
+
+// const fs = require("fs");
+// const multer = require("multer");
+
+// ===============
+// import path
+// ===============
+
+// const path = require("path");
+
+// routing upload file menggunakan multer
+// const imageFilter = (req, res, cb) => {
+//   if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+//     return cb(null, false);
+//   }
+//   cb(null, true);
+// };
+// const upload = multer({ dest: "public", imageFilter });
+
+// routers.post("/upload", upload.single("file"), (req, res) => {
+//   const file = req.file;
+//   if (file) {
+//     const target = path.join(__dirname, "public", file.originalname);
+//     fs.renameSync(file.path, target); //rename file agar sama dengan original name. jika tidak pakai maka file random akan terupload
+//     res.send("file berhasil diupload");
+//   } else {
+//     res.send("file gagal diuplaod");
+//   }
+// });
+
+// =========
 // Path
+// =========
 
 // routers.get("/download", (req, res) => {
 //   const filename = "logofik.png";
@@ -36,14 +141,14 @@ routers.post("/upload", upload.single("file"), (req, res) => {
 // });
 
 // Download
-routers.get("/download", (req, res) => {
-  const filename = "logofik.png";
-  res.sendFile(path.join(__dirname + "/download/" + filename), {
-    headers: {
-      "Content-Disposition": 'attachment; filename="logofik-photo.png"',
-    },
-  });
-});
+// routers.get("/download", (req, res) => {
+//   const filename = "logofik.png";
+//   res.sendFile(path.join(__dirname + "/download/" + filename), {
+//     headers: {
+//       "Content-Disposition": 'attachment; filename="logofik-photo.png"',
+//     },
+//   });
+// });
 
 // cara pendek untuk download
 // routers.get("/download", (req, res) => {
@@ -89,7 +194,6 @@ routers.delete("/delete", (req, res) =>
   res.send("request dengan method delete")
 );
 routers.patch("/patch", (req, res) => res.send("request dengan method patch"));
-
 routers.all("/universal", (req, res) =>
   res.send(`request method ${req.method}`)
 );
@@ -99,7 +203,6 @@ routers.all("/universal", (req, res) =>
 routers.get("/post/:id", (req, res) =>
   res.send(`Artikel ke - ${req.params.id}`)
 );
-
 // 2. menggunakan query string
 routers.get("/post", (req, res) => {
   const { page, sort } = req.query;
