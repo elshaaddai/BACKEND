@@ -5,7 +5,6 @@
 const http = require("http");
 const express = require("express");
 const moment = require("moment");
-const users = require("./users");
 const morgan = require("morgan");
 const app = express();
 const path = require("path");
@@ -30,18 +29,18 @@ app.use(
 );
 
 // get semua users
-app.get("/users", (req, res) => res.status(200).json(users));
+// app.get("/users", (req, res) => res.status(200).json(users));
 // get users berdasarkan nama
-app.get("/users/:name", (req, res) => {
-  const userName = req.params.name.toLowerCase();
-  const user = users.find((u) => u.name.toLowerCase() === userName);
+// app.get("/users/:name", (req, res) => {
+//   const userName = req.params.name.toLowerCase();
+//   const user = users.find((u) => u.name.toLowerCase() === userName);
 
-  // error data tidak ada
-  if (!user) {
-    return res.status(404).json({ message: "Data user tidak ditemukan" });
-  }
-  res.status(200).json(user);
-});
+//   // error data tidak ada
+//   if (!user) {
+//     return res.status(404).json({ message: "Data user tidak ditemukan" });
+//   }
+//   res.status(200).json(user);
+// });
 app.use(express.json());
 
 // menghubungkan file routers.js untuk menangani request
