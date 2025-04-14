@@ -5,8 +5,9 @@ const fs = require("fs");
 const multer = require("multer");
 const path = require("path");
 const client = require("./mongodb");
+const ObjectId = require("mongodb").ObjectId;
 
-// connect mongodb
+// get all users
 routers.get("/users", async (req, res) => {
   try {
     const db = client.db("latihan");
@@ -22,6 +23,30 @@ routers.get("/users", async (req, res) => {
     });
   }
 });
+
+// get single users
+routers.get("/users/:id", async (req, res) => {
+  try {
+    const db = client.db("latihan");
+    const user = await db.collection("users").findOne({
+      _id: new ObjectId(req.params.id),
+    });
+    res.status(200).json({
+      status: "success",
+      message: "single user",
+      data: user,
+    });
+  } catch (error) {
+    res.json({
+      status: "error",
+    });
+  }
+});
+
+// insert users
+// update users
+// delete users
+// get order user (join/aggregate)
 
 // ==================
 // exercise 5
