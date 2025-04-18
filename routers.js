@@ -44,9 +44,85 @@ routers.get("/users/:id", async (req, res) => {
 });
 
 // insert users
+routers.post("/users", async (req, res) => {
+  try {
+    const db = client.db("latihan");
+    const user = await db.collection("users").insertOne(req.body);
+    res.status(200).json({
+      status: "success",
+      message: "user inserted",
+      data: user,
+    });
+  } catch (error) {
+    res.json({
+      status: "error",
+    });
+  }
+});
 // update users
+routers.put("/users/:id", async (req, res) => {
+  try {
+    const db = client.db("latihan");
+    const user = await db
+      .collection("users")
+      .updateOne({ _id: new ObjectId(req.params.id) }, { $set: req.body });
+    res.status(200).json({
+      status: "success",
+      message: "user update",
+      data: user,
+    });
+  } catch (error) {
+    res.json({
+      status: "error",
+    });
+  }
+});
 // delete users
+routers.delete("/users/:id", async (req, res) => {
+  try {
+    const db = client.db("latihan");
+    const user = await db.collection("users").deleteOne({
+      _id: new ObjectId(req.params.id),
+    });
+    res.status(200).json({
+      status: "success",
+      message: "user deleted",
+      data: user,
+    });
+  } catch (error) {
+    res.json({
+      status: "error",
+    });
+  }
+});
 // get order user (join/aggregate)
+routers.get("/order", async (req, res) => {
+  try {
+    const db = client.db("latihan");
+    const user = await db
+      .collection("users")
+      .aggregate([
+        {
+          $lookup: {
+            from: "order",
+            localField: "_id",
+            foreignField: "userId",
+            as: "orders",
+          },
+        },
+      ])
+      .toArray();
+    res.status(200).json({
+      status: "success",
+      message: "list users with orders",
+      data: user,
+    });
+  } catch (error) {
+    res.json({
+      status: "error",
+    });
+  }
+});
 
 // ==================
 // exercise 5

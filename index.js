@@ -47,12 +47,12 @@ app.use(express.json());
 app.use(routers);
 
 // middleware untuk 404
-app.use((req, res) => {
-  res.status(404).json({
-    status: "error",
-    message: "resource tidak ditemukan",
-  });
-});
+// app.use((req, res) => {
+//   res.status(404).json({
+//     status: "error",
+//     message: "resource tidak ditemukan",
+//   });
+// });
 // middleware error handling (500)
 app.use((err, req, res, next) => {
   res.status(500).json({
